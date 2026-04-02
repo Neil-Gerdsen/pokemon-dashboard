@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
-const typeColors = {
-  fire: "bg-red-400 text-white",
-  water: "bg-blue-400 text-white",
-  grass: "bg-green-400 text-white",
-  electric: "bg-yellow-300 text-black",
-  poison: "bg-purple-400 text-white",
-  bug: "bg-lime-400 text-black",
-  normal: "bg-gray-300 text-black",
-  flying: "bg-indigo-300 text-black",
-  ground: "bg-yellow-600 text-white",
-  fairy: "bg-pink-300 text-black",
-};
+import icons from "./assets/icons";
+
 function PokemonCard({ p, onClick }) {
   const [types, setTypes] = useState([]);
 
@@ -64,10 +54,16 @@ function PokemonCard({ p, onClick }) {
         {types.map((t) => (
           <span
             key={t.type.name}
-            className="text-xs px-2 py-1 rounded-full bg-gray-200 capitalize"
+            className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gray-200 capitalize"
           >
+            <img
+              src={icons[t.type.name]}
+              alt={t.type.name}
+              className="w-4 h-4"
+            />
             {t.type.name}
           </span>
+
         ))}
       </div>
     </div>

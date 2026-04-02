@@ -8,6 +8,7 @@ function PokemonStats({ pokemon }) {
         <ul>
           {pokemon.stats.map((stat) => (
             <li key={stat.stat.name}>
+              
               {stat.stat.name}: {stat.base_stat}
             </li>
           ))}

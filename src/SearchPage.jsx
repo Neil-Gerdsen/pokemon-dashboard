@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import PokemonStats from "./pokemonStats";
 import PokemonCard from "./PokemonCard";
+import icons from "./assets/icons";
 
 function SearchPage() {
   const [search, setSearch] = useState("");
@@ -57,45 +58,60 @@ function SearchPage() {
           ))}
         </div> */}
         <div className="h-screen flex flex-col p-4">
-  <h1 className="text-2xl font-bold mb-4">Pokémon Search</h1>
+          <h1 className="text-2xl font-bold mb-4">Pokémon Search</h1>
 
-  <input
-    ref={inputRef}
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    placeholder="Search pokemon..."
-    className="border p-2 rounded mb-4"
-  />
+          <input
+            ref={inputRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search pokemon..."
+            className="border p-2 rounded mb-4"
+          />
 
-  {/* SCROLL AREA */}
-  <div className="flex-1 overflow-y-auto">
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {suggestions.map((p) => (
-        <PokemonCard
-          key={p.name}
-          p={p}
-          onClick={() => {
-            setSearch(p.name);
-            fetchPokemon(p.name);
-          }}
-        />
-      ))}
-    </div>
-  </div>
-</div>
-      </section >
-    <section className="flex flex-col gap-4 w-[70%]">
-      {pokemon && (
-        <div>
-          <h1>{pokemon.name}</h1>
-          
-          <ul>
-            <PokemonStats pokemon={pokemon} />
-          </ul>
-          <img src={pokemon.sprites.front_default} alt={pokemon.name} />
+          {/* SCROLL AREA */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {suggestions.map((p) => (
+                <PokemonCard
+                  key={p.name}
+                  p={p}
+                  onClick={() => {
+                    setSearch(p.name);
+                    fetchPokemon(p.name);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      )}
-    </section>
+      </section >
+      <section className="flex flex-col gap-4 w-[70%]">
+        {pokemon && (
+          <div>
+            <h1>{pokemon.name}</h1>
+            <div className="flex gap-2 mt-2">
+              {pokemon.types.map((t) => (
+                <span
+                  key={t.type.name}
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gray-200 capitalize"
+                >
+                  <img
+                    src={icons[t.type.name]}
+                    alt={t.type.name}
+                    className="w-4 h-4"
+                  />
+                  {t.type.name}
+                </span>
+              ))}
+            </div>
+
+            <ul>
+              <PokemonStats pokemon={pokemon} />
+            </ul>
+            <img src={pokemon.sprites.front_default} alt={pokemon.name} />
+          </div>
+        )}
+      </section>
     </div >
   );
 }
