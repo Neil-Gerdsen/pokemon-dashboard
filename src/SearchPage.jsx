@@ -2,13 +2,36 @@ import { useEffect, useState, useRef } from "react";
 import PokemonStats from "./pokemonStats";
 import PokemonCard from "./PokemonCard";
 import icons from "./assets/icons";
+import Filter from "./Filter";
 
 function SearchPage() {
   const [search, setSearch] = useState("");
   const [pokemon, setPokemon] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [allPokemon, setAllPokemon] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
   const inputRef = useRef(null);
+
+
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem("favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (name) => {
+    setFavorites((prev) =>
+      prev.includes(name)
+        ? prev.filter((f) => f !== name)
+        : [...prev, name]
+    );
+  };
+
 
   const fetchPokemon = async (name = search) => {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
@@ -20,9 +43,19 @@ function SearchPage() {
   useEffect(() => {
     const fetchAllPokemon = async () => {
       const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
-
       const data = await response.json();
-      setAllPokemon(data.results);
+      const detailed = await Promise.all(
+        data.results.map(async (p) => {
+          const res = await fetch(p.url);
+          const d = await res.json();
+
+          return {
+            ...p,
+            types: d.types.map((t) => t.type.name),
+          };
+        })
+      );
+      setAllPokemon(detailed);
     };
     fetchAllPokemon();
     inputRef.current?.focus();
@@ -37,29 +70,42 @@ function SearchPage() {
     }
   }, [search, allPokemon]);
 
+  const filteredSuggestions = suggestions.filter((p) => {
+    if (!p.types) return true;
+    if (selectedTypes.length === 0) return true;
+
+    return selectedTypes.every((type) =>
+      p.types?.includes(type)
+    );
+  });
+
+  const sortedSuggestions = [...filteredSuggestions].sort((a, b) => {
+    return favorites.includes(b.name) - favorites.includes(a.name);
+  });
+
+
   return (
     <div className="flex flex-row gap-4">
       <section className="flex flex-col gap-4 w-[30%] items-center">
-        {/* <h1>Pokémon Search</h1> */}
 
-        {/* <input
-          className="w-[40%]"
-          ref={inputRef}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          autoFocus
-          placeholder="Search pokemon..."
-        /> */}
-        {/* <div className="flex flex-col overflow-auto h-[80%] w-full">
-          {suggestions.map((p) => (
-            <div key={p.name} onClick={() => { setSearch(p.name); fetchPokemon(p.name); }}>
-              <PokemonCard p={p} />
-            </div>
-          ))}
-        </div> */}
         <div className="h-screen flex flex-col p-4">
-          <h1 className="text-2xl font-bold mb-4">Pokémon Search</h1>
+          <div className="flex justify-between items-center w-[90%] relative">
+            <h1 className="text-2xl font-bold">Pokémon Search</h1>
 
+            <button
+              onClick={() => setShowFilter((prev) => !prev)}
+              className="bg-gray-200 px-3 py-1 rounded"
+            >
+              Filter
+            </button>
+
+            {showFilter && (
+              <Filter
+                selectedTypes={selectedTypes}
+                setSelectedTypes={setSelectedTypes}
+              />
+            )}
+          </div>
           <input
             ref={inputRef}
             value={search}
@@ -71,14 +117,18 @@ function SearchPage() {
           {/* SCROLL AREA */}
           <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {suggestions.map((p) => (
+              {sortedSuggestions.map((p) => (
                 <PokemonCard
                   key={p.name}
                   p={p}
                   onClick={() => {
                     setSearch(p.name);
                     fetchPokemon(p.name);
+
+                    // setIsFavorite(JSON.parse(localStorage.getItem("favorites"))?.includes(p.name) || false);
                   }}
+                  isFavorite={favorites.includes(p.name)}
+                  onToggleFavorite={() => toggleFavorite(p.name)}
                 />
               ))}
             </div>

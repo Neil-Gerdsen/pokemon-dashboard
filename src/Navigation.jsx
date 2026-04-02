@@ -13,9 +13,7 @@ function Navigation() {
           <li>
             <Link to="/top-pokemon">Top 10 Pokémon</Link>
           </li>
-          <li>
-            <Link to="/side-bar-pokemon">Side Bar Pokémon</Link>
-          </li>
+          
         </ul>
       </div>
     </nav>

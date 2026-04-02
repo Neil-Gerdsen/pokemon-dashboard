@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import icons from "./assets/icons";
 
-function PokemonCard({ p, onClick }) {
+function PokemonCard({ p, onClick, isFavorite, onToggleFavorite }) {
   const [types, setTypes] = useState([]);
 
   const id = p.url.split("/").filter(Boolean).pop();
@@ -21,6 +21,12 @@ function PokemonCard({ p, onClick }) {
     fetchTypes();
   }, [p.url]);
 
+  // useEffect(() => {
+  //   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  //   setIsFavorite(favorites.includes(p.name));
+  // }, [p.name]);
+
+
   return (
     <div
       onClick={onClick}
@@ -35,6 +41,23 @@ function PokemonCard({ p, onClick }) {
         border border-gray-100
       "
     >
+      {/* <img 
+        onClick={onClick}
+        src={icons.favorite}
+        alt="Favorite"
+        className="w-6 h-6 object-contain mb-2 self-end"
+      /> */}
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // voorkomt dat card click triggert
+          onToggleFavorite();
+        }}
+        className="absolute top-2 right-2"
+      >
+        {isFavorite ? "⭐" : "☆"}
+      </button>
+
       <img
         src={imageUrl}
         alt={p.name}

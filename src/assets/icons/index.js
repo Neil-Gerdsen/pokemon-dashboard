@@ -16,6 +16,7 @@ import poison from "./poison.svg";
 import psychic from "./psychic.svg";
 import rock from "./rock.svg";
 import steel from "./steel.svg";
+import favorite from "./favorite.svg";
 
 // voeg alles toe wat je hebt
 
@@ -37,5 +38,6 @@ export default {
     poison,
     psychic,
     rock,
-    steel
+    steel,
+    favorite
 };
