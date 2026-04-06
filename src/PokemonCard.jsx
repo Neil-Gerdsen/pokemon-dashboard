@@ -53,7 +53,7 @@ function PokemonCard({ p, onClick, isFavorite, onToggleFavorite }) {
           e.stopPropagation(); // voorkomt dat card click triggert
           onToggleFavorite();
         }}
-        className="absolute top-2 right-2"
+        className="flex self-end top-2 right-2"
       >
         {isFavorite ? "⭐" : "☆"}
       </button>
